@@ -12,7 +12,11 @@ import {
   UniswapFactory,
 } from '../types/schema'
 import { Burn, Mint, Swap, Sync, Transfer } from '../types/templates/Pair/Pair'
-import { updatePairDayData, updatePairHourData, updateTokenDayData, updateUniswapDayData } from './dayUpdates'
+import { 
+  updatePairMinuteData, updatePairHourData, updatePairDayData,
+  updateTokenMinuteData, updateTokenHourData, updateTokenDayData,
+  updateUniswapDayData 
+} from './dayUpdates'
 import { ADDRESS_ZERO, BI_18, convertTokenToDecimal, createUser, FACTORY_ADDRESS, ONE_BI, ZERO_BD } from './helpers'
 import { findEthPerToken, getEthPriceInUSD, getTrackedLiquidityUSD, getTrackedVolumeUSD } from './pricing'
 
@@ -292,8 +296,7 @@ export function handleMint(event: Mint): void {
 
   // get new amounts of USD and ETH for tracking
   let bundle = Bundle.load('1')!
-  let amountTotalUSD = token1.derivedETH
-    .times(token1Amount)
+  let amountTotalUSD = token1.derivedETH.times(token1Amount)
     .plus(token0.derivedETH.times(token0Amount))
     .times(bundle.ethPrice)
 
@@ -315,11 +318,15 @@ export function handleMint(event: Mint): void {
   mint.save()
 
   // update day entities
-  updatePairDayData(event)
+  updatePairMinuteData(event)
   updatePairHourData(event)
-  updateUniswapDayData(event)
+  updatePairDayData(event) 
+ 
+  updateTokenMinuteData(token0 as Token, event)
+  updateTokenHourData(token0 as Token, event)
   updateTokenDayData(token0 as Token, event)
-  updateTokenDayData(token1 as Token, event)
+
+  updateUniswapDayData(event)
 }
 
 export function handleBurn(event: Burn): void {
@@ -380,12 +387,16 @@ export function handleBurn(event: Burn): void {
   burn.amountUSD = amountTotalUSD as BigDecimal
   burn.save()
 
-  // update day entities
-  updatePairDayData(event)
+  // update entities  
+  updatePairMinuteData(event)
   updatePairHourData(event)
-  updateUniswapDayData(event)
+  updatePairDayData(event) 
+ 
+  updateTokenMinuteData(token0 as Token, event)
+  updateTokenHourData(token0 as Token, event)
   updateTokenDayData(token0 as Token, event)
-  updateTokenDayData(token1 as Token, event)
+
+  updateUniswapDayData(event)
 }
 
 export function handleSwap(event: Swap): void {

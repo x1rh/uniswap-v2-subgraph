@@ -11,8 +11,18 @@ This subgraph dynamically tracks any pair created by the uniswap factory. It tra
 - historical data on Uniswap, pairs or tokens, aggregated by day
 
 ## Running Locally
+```shell
+yarn run build 
+yarn run create-local
+yarn run deploy-local 
+yarn run watch-local 
+```
 
-Make sure to update package.json settings to point to your own graph account.
+## deploy to remote 
+```shell
+
+```
+
 
 ## Queries
 
